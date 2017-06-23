@@ -17,25 +17,27 @@ import retrofit2.Retrofit;
  */
 public final class LMGsonConverterFactory extends Converter.Factory {
 
-    public static LMGsonConverterFactory create() {
-        return create(new Gson());
+    public static LMGsonConverterFactory create(Class baseClazz) {
+        return create(new Gson(), baseClazz);
     }
 
-    public static LMGsonConverterFactory create(Gson gson) {
+    public static LMGsonConverterFactory create(Gson gson, Class baseClazz) {
         if (gson == null) throw new NullPointerException("gson == null");
-        return new LMGsonConverterFactory(gson);
+        return new LMGsonConverterFactory(gson, baseClazz);
     }
 
     private final Gson gson;
+    private final Class baseClazz;
 
-    private LMGsonConverterFactory(Gson gson) {
+    private LMGsonConverterFactory(Gson gson, Class baseClazz) {
         this.gson = gson;
+        this.baseClazz = baseClazz;
     }
 
     @Override
     public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
         TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(type));
-        return new LMGsonResponseBodyConverter<>(gson, adapter);
+        return new LMGsonResponseBodyConverter<>(gson, adapter, baseClazz);
     }
 
     @Override

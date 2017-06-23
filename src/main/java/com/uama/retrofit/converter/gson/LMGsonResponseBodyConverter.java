@@ -15,10 +15,12 @@ import retrofit2.Converter;
 final class LMGsonResponseBodyConverter<T> implements Converter<ResponseBody, T> {
     private final Gson gson;
     private final TypeAdapter<T> adapter;
+    private final Class baseBeanClazz;
 
-    LMGsonResponseBodyConverter(Gson gson, TypeAdapter<T> adapter) {
+    LMGsonResponseBodyConverter(Gson gson, TypeAdapter<T> adapter, Class baseBeanClazz) {
         this.gson = gson;
         this.adapter = adapter;
+        this.baseBeanClazz = baseBeanClazz;
     }
 
     @Override
@@ -29,7 +31,7 @@ final class LMGsonResponseBodyConverter<T> implements Converter<ResponseBody, T>
             return adapter.fromJson(valueString);
         } catch (JsonSyntaxException e) {
             try {
-                return (T) gson.fromJson(valueString, LMBaseBean.class);
+                return (T) gson.fromJson(valueString, baseBeanClazz);
             } catch (JsonSyntaxException | ClassCastException e1) {
                 throw e;
             }
